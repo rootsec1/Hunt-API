@@ -1,0 +1,24 @@
+{
+  "name": "hunt",
+  "version": "1.0.0",
+  "description": "Rest API for the product delivery platform Hunt",
+  "main": "index.js",
+  "scripts": {
+    "test": "console.log('Everything works!');"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abhishekwl/Hunt-API.git"
+  },
+  "keywords": [
+    "node",
+    "mongo",
+    "Hunt"
+  ],
+  "author": "abhishekwl",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/abhishekwl/Hunt-API/issues"
+  },
+  "homepage": "https://github.com/abhishekwl/Hunt-API#readme"
+}
