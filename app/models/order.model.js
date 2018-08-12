@@ -1,0 +1,20 @@
+const mongoose = require('mongoose');
+//LOCAL
+const itemModel = require('./item.model');
+const storeModel = require('./store.model');
+const customerModel = require('./customer.model');
+
+const orderSchema = mongoose.Schema(
+    {
+        delivery_location_latitude: { type: Number, required: true },
+        delivery_location_longitude: { type: Number, required: true },
+        customer: { type: customerModel.schema, required: true },
+        items: { type: [itemModel.schema], required: true },
+        status: { type: String, required: false, default: 'WAIT' }
+    },
+    {
+        timestamps: true
+    }
+);
+
+module.exports = mongoose.model('Order', orderSchema);
