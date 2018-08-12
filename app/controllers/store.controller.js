@@ -26,7 +26,7 @@ exports.create = (req,res)=>{
 };
 
 exports.get = (req,res)=>{
-    if(req.query.uid) Store.findOne({ uid: req.params.uid }, (err,data)=>sendData(err,data,req,res));
+    if(req.query.uid) Store.findOne({ uid: req.query.uid }, (err,data)=>sendData(err,data,req,res));
     else if(req.query.id) Store.findById(req.query.id, (err,data)=>sendData(err,data,req,res));
     else if(req.query.q==='all') Store.find({}, (err,data)=>sendData(err,data,req,res));
 };
