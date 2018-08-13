@@ -10,7 +10,8 @@ const orderSchema = mongoose.Schema(
         delivery_location_longitude: { type: Number, required: true },
         customer: { type: customerModel.schema, required: true },
         items: { type: [itemModel.schema], required: true },
-        status: { type: String, required: false, default: 'WAIT' }
+        status: { type: String, required: false, default: 'WAIT' },
+        transaction_id: { type: String, required: false, default: null }
     },
     {
         timestamps: true
