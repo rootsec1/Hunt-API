@@ -26,7 +26,7 @@ exports.get = (req,res)=>{
     if(req.query.id) Item.findById(req.query.id, (err,data)=>sendData(err,data,req,res));
     else if(req.query.query) {
         const query = { $or: [{ name: { $regex: req.query.query, $options: 'i' }}, { subcategory: { $regex: req.query.query, $options: 'i' }}] };
-        Item.find(query,(err,data)=>sendData(err,data,req,res));
+        Item.find(query).sort({ priority: 'desc' }).exec((err,data)=>sendData(err,data,req,res));
     }
     else if(req.query.uid && req.query.category && req.query.subcategory) Item.find({ 'store.uid': req.query.uid, category: req.query.category, subcategory: req.query.subcategory }, (err,data)=>sendData(err,data,req,res));
     else if(req.query.uid && req.query.category) Item.find({ 'store.uid': req.query.uid, category: req.query.category }, (err,data)=>sendData(err,data,req,res));
