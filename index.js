@@ -19,6 +19,7 @@ app.get('/', (req,res)=>{
 require('./app/routes/store.routes')(app);
 require('./app/routes/item.routes')(app);
 require('./app/routes/customer.routes')(app);
+require('./app/routes/search.routes')(app);
 require('./app/routes/order.routes')(app);
 app.listen(config.PORT, ()=>{
     console.log('[SERVER] Listening on PORT '+config.PORT);

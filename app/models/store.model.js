@@ -15,6 +15,7 @@ const storeSchema = mongoose.Schema(
         delivery_service: { type: Boolean, required: true, default: false },
         delivery_distance_threshold: { type: Number, required: false, default: 3 },
         extra_distance_unit_cost: { type: Number, required: false, default: 6 },
+        free_delivery_cost_threshold: { type: Number, required: false, default: 100 },
         //Account Details
         account_number: { type: String, required: false, default: null },
         account_holder_name: { type: String, required: false, default: null },

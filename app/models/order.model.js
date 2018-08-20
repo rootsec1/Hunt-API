@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 //LOCAL
 const itemModel = require('./item.model');
-const storeModel = require('./store.model');
 const customerModel = require('./customer.model');
 
 const orderSchema = mongoose.Schema(
