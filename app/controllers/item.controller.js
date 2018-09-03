@@ -14,7 +14,8 @@ exports.create = (req,res)=>{
                     price: req.body.price,
                     store: data,
                     image: req.body.image?req.body.image:'',
-                    discount: req.body.discount?req.body.discount:0
+                    discount: req.body.discount?req.body.discount:0,
+                    colors: req.body.colors?req.body.colors:null
                 });
                 item.save((err,data)=>sendData(err,data,req,res));
             }

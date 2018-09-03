@@ -9,6 +9,7 @@ const itemSchema = mongoose.Schema(
         subcategory: { type: String, required: true, text: true },
         category: { type: String, required: true, text: true },
         price: { type: Number, required: true },
+        color: { type: [String], required: false, default: null },
         discount: { type: Number, required: false, default: 0 },
         priority: { type: Number, required: false, default: 0 },
         store: { type: storeModel.schema, required: true },
