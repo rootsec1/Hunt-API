@@ -24,13 +24,14 @@ exports.create = (req,res)=>{
 };
 
 exports.get = (req,res)=>{
-    if(req.query.id) Item.findById(req.query.id, (err,data)=>sendData(err,data,req,res));
-    else if(req.query.query) {
-        const query = { $or: [{ name: { $regex: req.query.query, $options: 'i' }}, { subcategory: { $regex: req.query.query, $options: 'i' }}] };
+    if(req.query.uid && req.query.id) Item.findById(req.query.id, (err,data)=>sendData(err,data,req,res));
+    else if(req.query.uid && req.query.query) {
+        const query = { $or: [{ name: { $regex: req.query.query, $options: 'i' }}, { subcategory: { $regex: req.query.query, $options: 'i' }}, { category: { $regex: req.query.query, $options: 'i' }}] };
         Item.find(query).sort({ priority: 'desc' }).exec((err,data)=>sendData(err,data,req,res));
     }
     else if(req.query.uid && req.query.category && req.query.subcategory) Item.find({ 'store.uid': req.query.uid, category: req.query.category, subcategory: req.query.subcategory }, (err,data)=>sendData(err,data,req,res));
     else if(req.query.uid && req.query.category) Item.find({ 'store.uid': req.query.uid, category: req.query.category }, (err,data)=>sendData(err,data,req,res));
+    else if(req.query.uid && req.query.all==1) Item.find({ 'store.uid': req.query.uid }, (err,data)=>sendData(err,data,req,res));
     else if(req.query.uid) Item.find({ 'store.uid': req.query.uid }, (err,data)=>{
         if(data.length) { 
             let categories = {};
