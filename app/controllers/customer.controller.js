@@ -31,7 +31,7 @@ exports.update = (req,res)=>{
 
 exports.delete = (req,res) => Customer.findByIdAndRemove(req.params.id, (err,data)=>sendData(err,data,req,res));
 
-function sendData(err,data,req,res) {
+function sendData(err,data=null,req,res) {
     if(err) {
         res.status(400).json({ error: err });
         console.log('[!ERR'+req.method+'] '+req.url);
