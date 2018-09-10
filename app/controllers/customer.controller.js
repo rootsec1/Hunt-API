@@ -1,19 +1,19 @@
 const Customer = require('../models/customer.model');
 
 exports.create = (req,res)=>{
-    if(req.body.uid && req.body.name && req.body.email && req.body.phone) {
+    if(req.body.uid && req.body.name && req.body.email) {
         const customer = new Customer({
             uid: req.body.uid,
             name: req.body.name,
             email: req.body.email,
-            phone: req.body.phone,
+            phone: req.body.phone?req.body.phone:'',
             image: req.body.image?req.body.image:'',
             account_number: req.body.account_number?req.body.account_number:null,
             account_holder_name: req.body.account_holder_name?req.body.account_holder_name:null,
             ifsc: req.body.ifsc?req.body.ifsc:null
         });
         customer.save((err,data)=>sendData(err,data,req,res));
-    } else sendData('Missing request body params [uid/name/email/phone]',null,req,res);
+    } else sendData('Missing request body params [uid/name/email]',null,req,res);
 };
 
 exports.get = (req,res)=>{
@@ -31,7 +31,7 @@ exports.update = (req,res)=>{
 
 exports.delete = (req,res) => Customer.findByIdAndRemove(req.params.id, (err,data)=>sendData(err,data,req,res));
 
-function sendData(err,data=null,req,res) {
+function sendData(err,data,req,res) {
     if(err) {
         res.status(400).json({ error: err });
         console.log('[!ERR'+req.method+'] '+req.url);
