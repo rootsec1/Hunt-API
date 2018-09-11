@@ -24,7 +24,7 @@ require('./app/routes/order.routes')(app);
 app.listen(config.PORT, ()=>{
     console.log('[SERVER] Listening on PORT '+config.PORT);
     mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true }).then(()=>{
-        console.log('[MONGODB] Connected to Database')
+        console.log('[MONGODB] Connected to Database');
     }).catch(err=>{
         console.log('[!ERR-MONGODB] Error connecting to DB. '+err+'\nExiting...');
         process.exit();

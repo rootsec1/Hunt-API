@@ -1,5 +1,7 @@
 const Item = require('../models/item.model');
 const Store = require('../models/store.model');
+const config = require('../../config');
+const request = require('request');
 
 exports.create = (req,res)=>{
     if(req.body.product_id && req.body.name && req.body.subcategory && req.body.category && req.body.price && req.body.store) {
@@ -25,6 +27,15 @@ exports.create = (req,res)=>{
 
 exports.get = (req,res)=>{
     if(req.query.uid && req.query.id) Item.findById(req.query.id, (err,data)=>sendData(err,data,req,res));
+    else if(req.query.uid && req.query.latitude && req.query.longitude && req.query.query) {
+        console.log('Here');
+        const query = { 'store.uid': req.query.uid, $or: [{ name: { $regex: req.query.query, $options: 'i' }}, { subcategory: { $regex: req.query.query, $options: 'i' }}, { category: { $regex: req.query.query, $options: 'i' }}] };
+        Item.find(query, (errItems,dataItems)=>{
+            if(!errItems && dataItems.length) {
+                
+            } else sendData('No nearby places that have '+query,null,req,res);
+        });
+    }
     else if(req.query.uid && req.query.query) {
         const query = { 'store.uid': req.query.uid, $or: [{ name: { $regex: req.query.query, $options: 'i' }}, { subcategory: { $regex: req.query.query, $options: 'i' }}, { category: { $regex: req.query.query, $options: 'i' }}] };
         Item.find(query, (err,data)=>sendData(err,data,req,res));
