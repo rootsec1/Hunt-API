@@ -27,7 +27,37 @@ exports.create = (req,res)=>{
 
 exports.get = (req,res)=>{
     if(req.query.uid && req.query.id) Item.findById(req.query.id, (err,data)=>sendData(err,data,req,res));
+    else if(req.query.uid && req.query.latitude && req.query.longitude && req.query.department) {
+        //UID = Customer UID
+        Item.find({ 'store.department': req.query.department }, (errItems1,dataItems1)=>{
+            if(errItems1 || dataItems1.length===0) sendData(errItems1||'No items found with the department '+req.query.department, null, req,res);
+            else {
+                const itemsInRadius = [];
+                let lat2 = req.query.latitude;
+                let lon2 = req.query.longitude;
+
+                dataItems1.map((item,index)=>{
+                    const storeDistanceThreshold = item.store.delivery_distance_threshold;
+                    let lat1 = item.store.latitude;
+                    let lon1 = item.store.longitude;
+
+                    var R = 6371; // km
+                    var dLat = toRad(lat2-lat1);
+                    var dLon = toRad(lon2-lon1);
+                    lat1 = toRad(lat1);
+                    lat2 = toRad(lat2);
+                    var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+                    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+                    var separationDistance = (R * c)/1000;
+                    
+                    if(separationDistance<=storeDistanceThreshold) itemsInRadius.push(item);
+                    if(index===dataItems1.length-1) sortItemsIntoCategories(itemsInRadius, (categories)=>sendData(null,categories,req,res));
+                });
+            }
+        });
+    }
     else if(req.query.uid && req.query.latitude && req.query.longitude && req.query.query) {
+        //UID = Store UID
         console.log('Here');
         const query = { 'store.uid': req.query.uid, $or: [{ name: { $regex: req.query.query, $options: 'i' }}, { subcategory: { $regex: req.query.query, $options: 'i' }}, { category: { $regex: req.query.query, $options: 'i' }}] };
         Item.find(query, (errItems,dataItems)=>{
@@ -62,6 +92,17 @@ exports.update = (req,res)=>{
 
 exports.delete = (req,res) => Item.findByIdAndRemove(req.params.id, (err,data)=>sendData(err,data,req,res));
 
+function sortItemsIntoCategories(items, callback) {
+    if(items.length) {
+        let categories = {};
+        items.map(item=>{
+            if(!categories.hasOwnProperty(item.category)) categories[item.category] = [];
+            categories[item.category].push(item);
+        });
+        callback(categories);
+    } else sendData(err|'No items present',null,req,res);
+}
+
 function sendData(err,data,req,res) {
     if(err) {
         res.status(400).json({ error: err });
@@ -70,4 +111,8 @@ function sendData(err,data,req,res) {
         res.status(200).send(data);
         console.log('['+req.method+'] '+req.url);
     }
+}
+
+function toRad(Value) {
+    return Value * Math.PI / 180;
 }
