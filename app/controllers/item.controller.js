@@ -1,6 +1,6 @@
 const Item = require('../models/item.model');
 const Store = require('../models/store.model');
-const config = require('../../config');
+const geolib = require('geolib');
 
 exports.create = (req,res)=>{
     if(req.body.product_id && req.body.name && req.body.subcategory && req.body.category && req.body.price && req.body.store) {
@@ -40,15 +40,11 @@ exports.get = (req,res)=>{
                     let lat1 = item.store.latitude;
                     let lon1 = item.store.longitude;
 
-                    var R = 6371; // km
-                    var dLat = toRad(lat2-lat1);
-                    var dLon = toRad(lon2-lon1);
-                    lat1 = toRad(lat1);
-                    lat2 = toRad(lat2);
-                    var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
-                    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-                    var separationDistance = (R * c)/1000;
-                    
+                    let separationDistance = geolib.getDistance({ latitude: lat1, longitude: lon1 }, { latitude: lat2, longitude: lon2 });
+                    separationDistance = geolib.convertUnit('km',separationDistance,4);
+
+                    console.log(item.store.name+" is "+separationDistance+" KM away from "+lat2+","+lon2);
+
                     if(separationDistance<=storeDistanceThreshold) itemsInRadius.push(item);
                     if(index===dataItems1.length-1) sortItemsIntoCategories(itemsInRadius, (categories)=>sendData(null,categories,req,res));
                 });
@@ -71,15 +67,11 @@ exports.get = (req,res)=>{
                     let lat1 = item.store.latitude;
                     let lon1 = item.store.longitude;
 
-                    var R = 6371;
-                    var dLat = toRad(lat2-lat1);
-                    var dLon = toRad(lon2-lon1);
-                    lat1 = toRad(lat1);
-                    lat2 = toRad(lat2);
-                    var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
-                    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-                    var separationDistance = (R * c)/1000;
-                    
+                    let separationDistance = geolib.getDistance({ latitude: lat1, longitude: lon1 }, { latitude: lat2, longitude: lon2 });
+                    separationDistance = geolib.convertUnit('km',separationDistance,4);
+
+                    console.log(item.store.name+" is "+separationDistance+" KM away from "+lat2+","+lon2);
+
                     if(separationDistance<=storeDistanceThreshold) itemsInRadius.push(item);
                     if(index===dataItems1.length-1) sortItemsIntoCategories(itemsInRadius, (categories)=>sendData(null,categories,req,res));
                 });
@@ -112,15 +104,13 @@ exports.update = (req,res)=>{
 
 exports.delete = (req,res) => Item.findByIdAndRemove(req.params.id, (err,data)=>sendData(err,data,req,res));
 
-function sortItemsIntoCategories(items, callback) {
-    if(items.length) {
-        let categories = {};
-        items.map(item=>{
-            if(!categories.hasOwnProperty(item.category)) categories[item.category] = [];
-            categories[item.category].push(item);
-        });
-        callback(categories);
-    } else sendData(err|'No items present',null,req,res);
+function sortItemsIntoCategories(items=[], callback) {
+    let categories = {};
+    items.map(item=>{
+        if(!categories.hasOwnProperty(item.category)) categories[item.category] = [];
+        categories[item.category].push(item);
+    });
+    callback(categories);
 }
 
 function sendData(err,data,req,res) {
